@@ -56,10 +56,10 @@
                                     <span class="visually-hidden">(current)</span></a
                                 >
                             </li>
-                            <li class="nav-item active">
+                            <li class="nav-item">
                                 <a class="nav-link" href="about.html">About</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item ">
                                 <a class="nav-link" href="gallery.html">Gallery</a>
                             </li><li class="nav-item">
                                 <a class="nav-link" href="blogs.html">Blogs</a>
@@ -82,33 +82,13 @@
             </nav>
             
         </header>
-
         <section id="banner-small"></section>
 
-        <div id="content"></div>
-        <div id="main">
-            <section class="container py-5">
-                <div class="row">
-                    <div class="col-md-8 col-sm-12" id="about-us">
-                        
-                    </div>
-                    <div class="col-md-4 col-sm-12" id="visions">
-                        
-                    </div>
-                </div>
-            </section>
-    
-            <!-- testimonials -->
-            <section class="container-fluid py-5" id="testimonials">
+        <main>
+            <section class="container py-5" id="content">
                 
             </section>
-    
-            <!-- our team -->
-            <section class="container" id="our-team">
-                
-            </section>
-        </div>
-        
+        </main>
 
         <footer class="text-center container-fluid text-white py-3">
             <!-- place footer here -->
@@ -120,11 +100,11 @@
                         >Home</a
                     >
                 </li>
-                <li class="nav-item ">
-                    <a class="nav-link active" href="about.html">About</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="gallery.html">Gallery</a>
+                    <a class="nav-link " href="gallery.html">Gallery</a>
                 </li><li class="nav-item">
                     <a class="nav-link" href="blogs.html">Blogs</a>
                 </li>
@@ -207,43 +187,20 @@
             crossorigin="anonymous"
         ></script>
 
-        <!-- Handlebars JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.runtime.min.js" integrity="sha512-WUaZk9J3oknQdKPT2wAfA0gEBG2371l1ACjiynLA/X28p07n1u59VFk7q1i83/bo7N9rqVdYKlnvwAAiwL36jQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="js/about.templates.min.js"></script>
+         <!-- Handlebars JS -->
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.runtime.min.js" integrity="sha512-WUaZk9J3oknQdKPT2wAfA0gEBG2371l1ACjiynLA/X28p07n1u59VFk7q1i83/bo7N9rqVdYKlnvwAAiwL36jQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+         <script src="js/search.templates.min.js"></script>
         <script src="js/22880066.min.js"></script>
 
         <script>
             checkLogin();
-            if(location.hash == "" || location.hash == "#") {
-                loadPage();
-            } else {
-                loadDetails(location.hash.substr(1), 'details-template', 'content');
-            }
-
-            function loadPage() {
-                document.getElementById('main').style.display = 'block';
-                document.getElementById('content').style.display = 'none';
-
-                loadData('aboutus', 'about-us-template', 'about-us');
-                loadData('visions', 'visions-template', 'visions');
-                loadData('testimonials', 'testimonials-template', 'testimonials');
-                loadData('team', 'our-team-template', 'our-team');
-                history.replaceState({loadPage: 1}, null, location.href);
-            }
-
-            async function loadDetails(request, templateId, viewId) {
-                document.getElementById('main').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-                await loadData(request, templateId, viewId);
-                history.replaceState({request, templateId, viewId}, null, location.href);
-            }
-
-            window.onpopstate = (event) => {
-                let state = event.state;
-                if(state && state.loadPage) {
-                    loadPage();
-                } else if(state && state.request) {
-                    loadDetails(state.request, state.templateId, state.viewId);
+            
+            let searchParams = new URLSearchParams(location.search);
+            let keyword = searchParams.get('keyword');
+            if(keyword) {
+                keyword = keyword.trim();
+                if(keyword != '') {
+                    loadData(`search?keyword=${keyword}`, 'search-template', 'content');
                 }
             }
         </script>

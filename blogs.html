@@ -24,7 +24,7 @@
             crossorigin="anonymous"
         />
         <!-- Web1 CSS -->
-        <link rel="stylesheet" href="css/22880066.css">
+        <link rel="stylesheet" href="css/22880066.min.css">
     </head>
 
     <body>
@@ -50,7 +50,7 @@
                     </button>
                     <div class="collapse navbar-collapse" id="menu-header">
                         <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                            <li class="nav-item active">
+                            <li class="nav-item ">
                                 <a class="nav-link" href="index.html" aria-current="page"
                                     >Home
                                     <span class="visually-hidden">(current)</span></a
@@ -61,25 +61,22 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="gallery.html">Gallery</a>
-                            </li><li class="nav-item">
+                            </li>
+                            <li class="nav-item active">
                                 <a class="nav-link" href="blogs.html">Blogs</a>
-                            </li><li class="nav-item">
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="contacts.html">Contact</a>
-                            </li><li class="nav-item">
-                                <a class="nav-link" href="#" data-bs-toggle="modal"
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link linkLogin" href="#" data-bs-toggle="modal"
                                 data-bs-target="#modalLogin">Login</a>
+                                <a class="nav-link linkLogout" href="#" style="display: none;" onclick="logout()">Logout</a>
                             </li>
                         </ul>
-                        <form class="d-flex my-2 my-lg-0 border rounded-pill" id="formSearch">
-                            <input
-                                class="form-control ms-3 border-0"
-                                type="text"
-                                placeholder="Search"
-                            />
-                            <button
-                                class="btn my-2 my-sm-0 border-0"
-                                type="submit"
-                            >
+                        <form class="d-flex my-2 my-lg-0 border rounded-pill" id="formSearch" method="GET" action="search.html">
+                            <input class="form-control ms-3 border-0" type="text" placeholder="Search" name="keyword" id="keyword" required/>
+                            <button class="btn my-2 my-sm-0 border-0" type="submit">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </button>
                         </form>
@@ -91,7 +88,14 @@
 
         <main>
             <section class="container py-5">
-                <h1>Blogs</h1>
+                <div class="row">
+                    <div class="col-8" id="blogs">
+                        
+                    </div>
+                    <div class="col-4" id="blogs-categories">
+                        
+                    </div>
+                </div>
             </section>
         </main>
 
@@ -101,7 +105,7 @@
                 class="nav justify-content-center py-3" id="menu-footer"
             >
                 <li class="nav-item">
-                    <a class="nav-link active" href="index.html" aria-current="page"
+                    <a class="nav-link " href="index.html" aria-current="page"
                         >Home</a
                     >
                 </li>
@@ -111,14 +115,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="gallery.html">Gallery</a>
                 </li><li class="nav-item">
-                    <a class="nav-link" href="blogs.html">Blogs</a>
+                    <a class="nav-link active" href="blogs.html">Blogs</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="contacts.html">Contacts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-bs-toggle="modal"
+                    <a class="nav-link linkLogin" href="#" data-bs-toggle="modal"
                     data-bs-target="#modalLogin">Login</a>
+                    <a class="nav-link linkLogout" href="#" style="display: none;" onclick="logout()">Logout</a>
                 </li>
             </ul>
             <p class="text-white-50">Copyright &copy; 2022 by Nguyen Lam Kha - 22880066</p>
@@ -151,7 +156,7 @@
                         ></button>
                     </div>
                     <div class="modal-body">
-                        <form action="#" method="post" id="formLogin">
+                        <form action="#" method="post" id="formLogin" onsubmit="login(event)">
                             <h3 class="text-center">Login Form</h3>
                             <div class="mb-3">
                                 <input type="text" name="username" id="username" placeholder="Username" class="form-control">
@@ -162,8 +167,8 @@
                             <button type="submit" class="form-control btn">Login</button>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        
+                    <div class="modal-footer justify-content-center">
+                        <div class="text-danger" id="errorMessage"></div>
                     </div>
                 </div>
             </div>
@@ -190,5 +195,86 @@
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
             crossorigin="anonymous"
         ></script>
+
+        <!-- Handlebars JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.runtime.min.js" integrity="sha512-WUaZk9J3oknQdKPT2wAfA0gEBG2371l1ACjiynLA/X28p07n1u59VFk7q1i83/bo7N9rqVdYKlnvwAAiwL36jQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/handlebars-pagination-helper.min.js"></script>
+        <script src="js/blogs.templates.min.js"></script>
+        <script src="js/22880066.min.js"></script>
+
+
+        <script>
+            checkLogin();
+            Handlebars.registerHelper('formatDate', function(date) {
+                let formatDate = new Date(date);
+                let options = {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    timeZoneName: 'short'
+                }
+                return formatDate.toLocaleString('en-US', options);
+            });
+
+            async function loadBlogs(request, currentPage = 1) {
+                const response = await fetch(`${API}/${request}?page=${currentPage}`);
+                const context = await response.json();
+                context.currentPage = currentPage;
+                context.request = request;
+
+                //var source = document.getElementById('blogs-template').innerHTML;
+                //var template = Handlebars.compile(source);
+                var template = Handlebars.templates['blogs-template'];
+                var view = document.getElementById('blogs');
+                view.innerHTML = template(context);
+            };
+
+            loadBlogs('blogs');
+            loadData('blogs-categories', 'blogs-categories-template', 'blogs-categories');
+
+            async function loadBlogDetails(blogId, gotoComments = false) {
+                await loadData(`blogs/${blogId}`, 'details-template', 'blogs');
+                checkLogin();
+                if(gotoComments) {
+                    //const element = document.getElementById("comment");
+                    //element.scrollIntoView();
+                    location.href = '#comment';
+                }
+            };
+
+            async function addComment(e) {
+                e.preventDefault();
+                let token = localStorage.getItem('token');
+                let postData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    comment: document.getElementById('comment').value,
+                    blogId: document.getElementById('blogId').value,
+                    agree: (document.getElementById('agree').value == 1)
+                }
+                let responseMessage = document.getElementById('responseMessage');
+                try {
+                    let response = await fetch(`${AUTHENTICATH_API}/comment`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify(postData)
+                    })
+                    let result = await response.json();
+                    if(response.status == 200) {
+                        loadBlogDetails(postData.blogId, true);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch(error) {
+                    responseMessage.innerHTML = error;
+                    responseMessage.className = 'text-danger';
+                }
+            }
+        </script>
     </body>
 </html>
